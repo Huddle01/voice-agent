@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["Om Gupta <omgupta0720@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+huddle01 = {path = "/Users/omg/Desktop/huddle/shinigami/packages/huddle01-python", develop = true}
+ai01 = {path = "/Users/omg/Desktop/huddle/huddle01-ai", develop = true}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
