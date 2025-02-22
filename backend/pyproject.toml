@@ -11,6 +11,9 @@ huddle01 = {path = "/Users/omg/Desktop/huddle/shinigami/packages/huddle01-python
 ai01 = {path = "/Users/omg/Desktop/huddle/huddle01-ai", develop = true}
 
 
+[tool.poetry.group.dev.dependencies]
+ruff = "0.9.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
