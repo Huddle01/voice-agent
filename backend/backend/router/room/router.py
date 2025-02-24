@@ -3,7 +3,11 @@ from fastapi import APIRouter, HTTPException, status
 from backend.agent import Role, VoiceAgent, VoiceAgentOptions
 from backend.store import store
 
-from .schema import JoinRoomRequest, JoinRoomResponse
+from .schema import (
+    JoinRoomRequest,
+    JoinRoomResponse,
+    VoiceAgentInfoResponse,
+)
 
 router = APIRouter(
     prefix="/flow",
@@ -12,7 +16,7 @@ router = APIRouter(
 )
 
 
-@router.get(
+@router.put(
     "/join-room", status_code=status.HTTP_200_OK, response_model=JoinRoomResponse
 )
 async def agent_join_room(item: JoinRoomRequest):
@@ -44,6 +48,31 @@ async def agent_join_room(item: JoinRoomRequest):
         return JoinRoomResponse(room_id=room_id, agent_peer_id=peer_id)
 
     except ValueError as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        return HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get(
+    "/agent-info", status_code=status.HTTP_200_OK, response_model=VoiceAgentInfoResponse
+)
+async def get_agent_info(
+    room_id: str,
+):
+    """
+    Get Agent Info
+    """
+    try:
+        print(room_id)
+        agent = await store.get_agent(room_id)
+        if agent is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Agent does not exist"
+            )
+
+        return VoiceAgentInfoResponse(room_id=room_id, agent_peer_id=agent.peer_id)
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
