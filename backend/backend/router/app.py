@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .health.router import router as health_router
+from .room.router import router as room_router
 
 app = FastAPI(
     title="i7E Server",
@@ -17,6 +18,7 @@ app.add_middleware(
 )
 
 app.include_router(health_router, prefix="/api/v1")
+app.include_router(room_router, prefix="/api/v1")
 
 
 @app.get("/")

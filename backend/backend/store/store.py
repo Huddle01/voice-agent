@@ -1,7 +1,7 @@
 import asyncio
 from typing import Dict, List, Optional
 
-from ai01.agent import Agent
+from backend.agent import VoiceAgent
 
 
 # Store class to manage agents
@@ -11,10 +11,10 @@ class Store:
     """
 
     def __init__(self):
-        self._agents: Dict[str, Agent] = {}
+        self._agents: Dict[str, VoiceAgent] = {}
         self._lock = asyncio.Lock()  # Asyncio lock for concurrency control
 
-    async def get_agent(self, room_id: str) -> Optional[Agent]:
+    async def get_agent(self, room_id: str) -> Optional[VoiceAgent]:
         """Retrieves an agent by room_id if it exists, None otherwise."""
         async with self._lock:
             return self._agents.get(room_id)
@@ -24,9 +24,12 @@ class Store:
         async with self._lock:
             return room_id in self._agents
 
-    async def set_agent(self, room_id: str, agent: Agent):
+    async def set_agent(self, room_id: str, agent: VoiceAgent):
         """Stores an agent, associated with a room_id."""
         async with self._lock:
+            if room_id in self._agents:
+                raise ValueError(f"Agent already exists for room_id {room_id}")
+
             self._agents[room_id] = agent
 
     async def remove_agent(self, room_id: str):
