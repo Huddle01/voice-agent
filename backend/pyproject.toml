@@ -11,6 +11,8 @@ huddle01 = {path = "/Users/omg/Desktop/huddle/shinigami/packages/huddle01-python
 ai01 = {path = "/Users/omg/Desktop/huddle/huddle01-ai", develop = true}
 python-dotenv = "^1.0.1"
 asyncio = "^3.4.3"
+fastapi = "^0.115.8"
+uvicorn = "^0.34.0"
 
 
 [tool.poetry.group.dev.dependencies]
