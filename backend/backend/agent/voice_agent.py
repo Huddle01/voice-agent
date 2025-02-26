@@ -93,7 +93,7 @@ class VoiceAgent:
             api_key=env.huddle_api_key,
             project_id=env.huddle_project_id,
             room_id=self.room_id,
-            role=self.role if self.role is not None else Role.HOST,
+            role=self.role if self.role is not None else Role.BOT,
             metadata=self._options.metadata
             if self._options.metadata is not None
             else {},

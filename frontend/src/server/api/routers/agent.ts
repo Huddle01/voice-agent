@@ -12,7 +12,10 @@ export const agentRouter = createTRPCRouter({
         try{
             const {roomId} = input;
 
-            const response = await axios.put(`${env.AGENT_URL}/api/v1/flow/join-room`, {
+            const response = await axios.put<{
+                room_id: string,
+                agent_peer_id: string,
+            }>(`${env.AGENT_URL}/api/v1/flow/join-room`, {
                 "room_id": roomId,
             })
 

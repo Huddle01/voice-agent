@@ -2,17 +2,14 @@ import { cn } from '@/lib/utils';
 import type React from 'react'
 import { useEffect, useState } from 'react';
 
-
-
 const AgentCard: React.FC = () => {
-
     const [aiSpeaking, setAiSpeaking] = useState(false);
-  
+
     useEffect(() => {
-      const interval = setInterval(() => {
-        setAiSpeaking(prev => !prev);
-      }, 3000);
-      return () => clearInterval(interval);
+        const interval = setInterval(() => {
+            setAiSpeaking(prev => !prev);
+        }, 3000);
+        return () => clearInterval(interval);
     }, []);
 
   return (

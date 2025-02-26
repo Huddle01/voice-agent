@@ -2,6 +2,8 @@ import { Mic, MicOff } from 'lucide-react'
 import type React from 'react'
 import { Button } from '../ui/button'
 import { LogOut } from 'lucide-react'
+import { useLocalPeer, usePeerIds, useRoom } from '@huddle01/react'
+import { useRouter } from 'next/router'
 
 interface MediaTrayProps {
   audioEnabled: boolean
@@ -9,7 +11,22 @@ interface MediaTrayProps {
 }
 
 const MediaTray: React.FC<MediaTrayProps> = ({ audioEnabled, setAudioEnabled }) => {
+  const {peerId} = useLocalPeer();
+  const {peerIds} = usePeerIds();
+  const {closeRoom, room} = useRoom()
+
+  const router = useRouter();
+
+  const handleCloseRoom = () => {
+    closeRoom()
+
+    router.push('/')
+  }
+
   return (
+    <div className = 'grid grid-cols-[2fr_10fr_2fr] items-center px-8' >
+      <p className='text-sm text-zinc-400 font-mono' >RoomId: {room.roomId}</p>
+    
     <div className="flex justify-center items-center p-4 pb-6 backdrop-blur-md">
         <div className="flex gap-4 items-center">
           <Button 
@@ -25,12 +42,19 @@ const MediaTray: React.FC<MediaTrayProps> = ({ audioEnabled, setAudioEnabled }) 
           </Button>
           
           <Button 
+            onClick={handleCloseRoom}
             variant="destructive" 
             className="rounded-full w-12 h-12 bg-[#e15b5b] hover:bg-[#d14a4a] border-0 text-white font-medium transition-all duration-200"
           >
             <LogOut />
           </Button>
         </div>
+      </div>
+      <div>
+        LocalPeerId: {peerId} <br />
+        
+        RemotePeers: {JSON.stringify(peerIds, null, 2)}
+      </div>
       </div>
   )
 }
