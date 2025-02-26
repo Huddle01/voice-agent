@@ -20,7 +20,7 @@ export const roomRouter = createTRPCRouter({
 
             return {
                 message: response.message,
-                roomId: "DAAO"
+                roomId: response.roomId,
             }
 
         }catch(error){
