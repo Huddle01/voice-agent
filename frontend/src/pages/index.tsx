@@ -61,27 +61,27 @@ export default function Home() {
   }, [inputValue]);
 
   const handleSubmit = async () => {
-    // if (!inputValue.trim()) {
-    //   toast.error("Input required", {
-    //     description: "Please enter a question or message.",
-    //     action: {
-    //       label: "Try again",
-    //       onClick: () => textareaRef.current?.focus()
-    //     }
-    //   });
-    //   return;
-    // }
+    if (!inputValue.trim()) {
+      toast.error("Input required", {
+        description: "Please enter a question or message.",
+        action: {
+          label: "Try again",
+          onClick: () => textareaRef.current?.focus()
+        }
+      });
+      return;
+    }
     
-    // if (!selectedPersona) {
-    //   toast.error("Persona required", {
-    //     description: "Please select a persona to chat with.",
-    //     action: {
-    //       label: "Select one",
-    //       onClick: () => document.getElementById("persona-container")?.scrollIntoView({ behavior: "smooth" })
-    //     }
-    //   });
-    //   return;
-    // }
+    if (!selectedPersona) {
+      toast.error("Persona required", {
+        description: "Please select a persona to chat with.",
+        action: {
+          label: "Select one",
+          onClick: () => document.getElementById("persona-container")?.scrollIntoView({ behavior: "smooth" })
+        }
+      });
+      return;
+    }
 
     try{
       setIsLoading(true);
@@ -275,35 +275,49 @@ export default function Home() {
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {communityAgents.map((agent) => (
-              <div className="cursor-pointer" >
-                <Card className="border-zinc-800/50 bg-zinc-900 hover:bg-zinc-800/80 transition-all duration-300 h-full overflow-hidden group">
-                  <div className="relative overflow-hidden aspect-[4/3] bg-zinc-800">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 group-hover:opacity-70 transition-opacity" />
-
-                    <div className="w-full h-full flex items-center justify-center text-zinc-500">
-                      <span className="text-4xl">{agent.title.charAt(0)}</span>
-                    </div>
-                  </div>
-
-                  <CardContent className="p-4 grid grid-rows-[1fr_2fr_1fr] gap-2">
-                    <h3 className="font-medium text-white mb-1">{agent.title}</h3>
-                    <p className="text-zinc-400 text-xs font-mono" >
-                      {agent.description}
-                    </p>
-                    <div className="flex items-center text-sm text-zinc-400">
-                      <User className="w-3 h-3 mr-1" />
-                      <span>{agent.forks} Views</span>
-                    </div>
-                  </CardContent>
-                </Card>
+          <div className="relative mb-6">
+            <div className="absolute inset-0 z-10 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-xl"></div>
+              
+              <div className="relative z-20 text-center px-8 py-12">
+                <div className="inline-block border border-zinc-700 bg-zinc-900/80 backdrop-blur-md rounded-xl px-8 py-6 shadow-xl">
+                  <h3 className="text-3xl font-bold text-white mb-2">Coming Soon</h3>
+                  <p className="text-zinc-400 max-w-md">
+                    We're working on bringing you the best community-created agents. 
+                    Check back soon for exciting new additions.
+                  </p>
+                </div>
               </div>
-            ))}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 opacity-50">
+              {communityAgents.map((agent) => (
+                <div className="cursor-pointer" key={agent.title}>
+                  <Card className="border-zinc-800/50 bg-zinc-900 hover:bg-zinc-800/80 transition-all duration-300 h-full overflow-hidden group">
+                    <div className="relative overflow-hidden aspect-[4/3] bg-zinc-800">
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 group-hover:opacity-70 transition-opacity" />
+
+                      <div className="w-full h-full flex items-center justify-center text-zinc-500">
+                        <span className="text-4xl">{agent.title.charAt(0)}</span>
+                      </div>
+                    </div>
+
+                    <CardContent className="p-4 grid grid-rows-[1fr_2fr_1fr] gap-2">
+                      <h3 className="font-medium text-white mb-1">{agent.title}</h3>
+                      <p className="text-zinc-400 text-xs font-mono" >
+                        {agent.description}
+                      </p>
+                      <div className="flex items-center text-sm text-zinc-400">
+                        <User className="w-3 h-3 mr-1" />
+                        <span>{agent.forks} Views</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
-      
       </main>
     </div>
   );
