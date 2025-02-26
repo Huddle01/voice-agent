@@ -21,13 +21,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { useRoom } from "@huddle01/react";
+import { useLocalAudio, useRoom } from "@huddle01/react";
 import { useRouter } from "next/router";
 
 export default function Home() {
   const {mutateAsync: createToken} = api.room.token.useMutation();
   const {mutateAsync: createRoom} = api.room.create.useMutation();
+  const {mutateAsync: callAgent} = api.agent.callAgent.useMutation();
+
   const {joinRoom} = useRoom();
+  const {enableAudio}= useLocalAudio();
   const router = useRouter();
 
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
@@ -77,8 +80,13 @@ export default function Home() {
     try{
       setIsLoading(true);
 
+      await enableAudio();
 
       const room = await createRoom();
+
+      await callAgent({
+        roomId: room.roomId
+      })
 
       const token = await createToken({
         displayName: "OmG",
@@ -91,8 +99,6 @@ export default function Home() {
       })
 
       router.push(`/room/lobby?roomId=${room.roomId}`);
-
-      
     }catch(error){
       toast.error("Failed to send message", {
         description: "Please try again later."
@@ -100,9 +106,6 @@ export default function Home() {
     }finally{
       setIsLoading(false);
     }
-
-    
-    
   };
 
   const personas = [

@@ -9,6 +9,8 @@ export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
     HUDL_API_KEY: z.string(),
+
+    AGENT_URL: z.string().default("http://localhost:8080"),
   },
 
   /**
@@ -28,6 +30,7 @@ export const env = createEnv({
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     HUDL_API_KEY: process.env.HUDL_API_KEY,
+    AGENT_URL: process.env.AGENT_URL,
     
     NEXT_PUBLIC_HUDL_PROJECT_ID: process.env.NEXT_PUBLIC_HUDL_PROJECT_ID,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,

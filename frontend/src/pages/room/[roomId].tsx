@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MediaTray from '@/components/room/MediaTray';
 import AgentCard from '@/components/room/Peers/AgentCard';
 import {Share} from 'lucide-react';
+import AudioController from '@/components/room/AudioController';
 
 const RoomPage = () => {
   const [audioEnabled, setAudioEnabled] = useState(true);
@@ -30,6 +31,8 @@ const RoomPage = () => {
         setAudioEnabled={setAudioEnabled}
       />
       </div>
+
+      <AudioController />
     </section>
   );
 };
