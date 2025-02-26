@@ -1,3 +1,5 @@
+"use client";
+
 import Head from "next/head";
 import Link from "next/link";
 import { api } from "@/utils/api";
@@ -80,7 +82,7 @@ export default function Home() {
     try{
       setIsLoading(true);
 
-      await enableAudio();
+      await enableAudio()
 
       const room = await createRoom();
 

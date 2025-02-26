@@ -1,3 +1,5 @@
+"use client";
+
 import { GeistSans } from "geist/font/sans";
 import type { AppType } from "next/app";
 import { Toaster } from "@/components/ui/sonner"
@@ -23,7 +25,7 @@ const huddleClient = new HuddleClient({
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <HuddleProvider client={huddleClient} >
+    <HuddleProvider key='huddle-provider' client={huddleClient} >
       <div className={cn(GeistSans.className, "bg-black min-h-screen text-white")}>
         <Component {...pageProps} />
         <Toaster />
@@ -33,3 +35,5 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 };
 
 export default api.withTRPC(MyApp);
+
+
