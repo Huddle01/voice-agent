@@ -21,9 +21,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useRoom } from "@huddle01/react";
+import { useRouter } from "next/router";
 
 export default function Home() {
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
+  const {mutateAsync: createToken} = api.room.token.useMutation();
+  const {mutateAsync: createRoom} = api.room.create.useMutation();
+  const {joinRoom} = useRoom();
+  const router = useRouter();
+
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -45,40 +51,58 @@ export default function Home() {
     }
   }, [inputValue]);
 
-  const handleSubmit = () => {
-    if (!inputValue.trim()) {
-      toast.error("Input required", {
-        description: "Please enter a question or message.",
-        action: {
-          label: "Try again",
-          onClick: () => textareaRef.current?.focus()
-        }
+  const handleSubmit = async () => {
+    // if (!inputValue.trim()) {
+    //   toast.error("Input required", {
+    //     description: "Please enter a question or message.",
+    //     action: {
+    //       label: "Try again",
+    //       onClick: () => textareaRef.current?.focus()
+    //     }
+    //   });
+    //   return;
+    // }
+    
+    // if (!selectedPersona) {
+    //   toast.error("Persona required", {
+    //     description: "Please select a persona to chat with.",
+    //     action: {
+    //       label: "Select one",
+    //       onClick: () => document.getElementById("persona-container")?.scrollIntoView({ behavior: "smooth" })
+    //     }
+    //   });
+    //   return;
+    // }
+
+    try{
+      setIsLoading(true);
+
+
+      const room = await createRoom();
+
+      const token = await createToken({
+        displayName: "OmG",
+        roomId: "DAAO"
       });
-      return;
-    }
-    
-    if (!selectedPersona) {
-      toast.error("Persona required", {
-        description: "Please select a persona to chat with.",
-        action: {
-          label: "Select one",
-          onClick: () => document.getElementById("persona-container")?.scrollIntoView({ behavior: "smooth" })
-        }
-      });
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    setTimeout(() => {
+
+      await joinRoom({
+        token: token.token,
+        roomId: room.roomId
+      })
+
+      router.push(`/room/lobby?roomId=${room.roomId}`);
+
       
-      toast.success("Message sent", {
-        description: `Your message was sent to ${selectedPersona}.`
+    }catch(error){
+      toast.error("Failed to send message", {
+        description: "Please try again later."
       });
-      
-      setInputValue("");
+    }finally{
       setIsLoading(false);
-    }, 2000);
+    }
+
+    
+    
   };
 
   const personas = [
