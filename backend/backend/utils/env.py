@@ -10,6 +10,11 @@ ENV_SPEC = {
         "required": True,
         "type": str,
     },
+    "host": {
+        "env_name": "HOST",
+        "required": True,
+        "type": str,
+    },
     "listen_port": {
         "env_name": "LISTEN_PORT",
         "required": True,
@@ -87,6 +92,10 @@ class EnvironmentVariables:
     @property
     def listen_port(self) -> int:
         return self._env_vars["listen_port"]
+
+    @property
+    def host(self) -> str:
+        return self._env_vars["host"]
 
 
 # Function to load environment variables based on a declarative specification

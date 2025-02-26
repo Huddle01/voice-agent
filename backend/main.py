@@ -13,7 +13,7 @@ async def main():
 
         config = uvicorn.Config(
             app=app,
-            host="0.0.0.0",
+            host=env.host,
             port=env.listen_port,
             workers=1,
             reload=True,
@@ -21,7 +21,7 @@ async def main():
         )
 
         logger.info(
-            f"Starting server on 0.0.0.0:{env.listen_port}, reload=True, workers=1"
+            f"Starting server on {env.host}:{env.listen_port}, reload=True, workers=1"
         )
 
         server = uvicorn.Server(config)

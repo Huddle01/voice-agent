@@ -10,7 +10,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]),
     HUDL_API_KEY: z.string(),
 
-    AGENT_URL: z.string().default("http://localhost:8080"),
+    AGENT_URL: z.string(),
   },
 
   /**
