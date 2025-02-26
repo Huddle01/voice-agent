@@ -3,9 +3,23 @@ import MediaTray from '@/components/room/MediaTray';
 import AgentCard from '@/components/room/Peers/AgentCard';
 import {Share} from 'lucide-react';
 import AudioController from '@/components/room/AudioController';
+import { useAtomValue } from 'jotai';
+import { roomIdAtom } from '@/store/room.store';
+import { toast } from 'sonner';
+
 
 const RoomPage = () => {
+  const roomId = useAtomValue(roomIdAtom);
   const [audioEnabled, setAudioEnabled] = useState(true);
+
+  const copyLinkToClipboard = () => {
+    const link = `https://huddle.app/room/${roomId}`;
+
+    navigator.clipboard.writeText(link);
+
+    toast.success('Link copied to clipboard, share it with your friends!');
+
+  }
 
   return (
     <section className="flex flex-col h-screen text-white bg-black">
@@ -17,7 +31,7 @@ const RoomPage = () => {
         </div>
         
       
-        <div className='cursor-pointer' >
+        <div onClick={copyLinkToClipboard} className='cursor-pointer' >
           <Share className='text-zinc-400 hover:text-zinc-300 transition-all duration-150' size={20} />
         </div>
 
