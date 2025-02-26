@@ -6,6 +6,7 @@ from backend.store import store
 from .schema import (
     JoinRoomRequest,
     JoinRoomResponse,
+    VoiceAgentFlushRequest,
     VoiceAgentInfoResponse,
 )
 
@@ -36,7 +37,11 @@ async def agent_join_room(item: JoinRoomRequest):
             return JoinRoomResponse(room_id=room_id, agent_peer_id=agent_exists.peer_id)
 
         voice_agent_options = VoiceAgentOptions(
-            room_id=room_id, role=Role.HOST, metadata={"displayName": "Agent"}
+            room_id=room_id,
+            role=Role.HOST,
+            metadata={"displayName": "Agent"},
+            persona=item.persona,
+            initial_query=item.initial_query,
         )
 
         agent = VoiceAgent(voice_agent_options)
@@ -46,6 +51,35 @@ async def agent_join_room(item: JoinRoomRequest):
         peer_id = await agent.join_room()
 
         return JoinRoomResponse(room_id=room_id, agent_peer_id=peer_id)
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post(
+    "/flush-audio",
+    status_code=status.HTTP_200_OK,
+    response_model=VoiceAgentInfoResponse,
+)
+async def flush_audio(
+    item: VoiceAgentFlushRequest,
+):
+    """
+    Flush Audio, to clear the audio buffer for the agent
+    """
+
+    try:
+        agent = await store.get_agent(item.room_id)
+        if agent is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Agent does not exist"
+            )
+        if agent.agent.audio_track is not None:
+            agent.agent.audio_track.flush_audio()
+
+        return VoiceAgentInfoResponse(room_id=item.room_id, agent_peer_id=agent.peer_id)
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

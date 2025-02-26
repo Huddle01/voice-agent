@@ -8,6 +8,9 @@ import { env } from "@/env";
 export const agentRouter = createTRPCRouter({
     callAgent: publicProcedure.input(z.object({
         roomId: z.string(),
+        persona: z.string().default("Comedian"),
+        initialQuery: z.string().default(''),
+        
     })).mutation(async ({input}) => {
         try{
             const {roomId} = input;
@@ -17,6 +20,8 @@ export const agentRouter = createTRPCRouter({
                 agent_peer_id: string,
             }>(`${env.AGENT_URL}/api/v1/flow/join-room`, {
                 "room_id": roomId,
+                "persona": input.persona,
+                "initial_query": input.initialQuery,
             })
 
             if(response.status !== 200){
@@ -41,6 +46,40 @@ export const agentRouter = createTRPCRouter({
             });
         }
     }),
+
+    flushAudio: publicProcedure.input(z.object({
+        roomId: z.string(),
+    })).mutation(async ({input}) => {
+        try{
+            const {roomId} = input;
+
+            const response = await axios.post(`${env.AGENT_URL}/api/v1/flow/flush-audio`, {
+                "room_id": roomId,
+            });
+
+            if(response.status !== 200){
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "Something went wrong",
+                });
+            }
+
+            return response.data;
+
+        }catch(error){
+            console.error(error);
+
+            if(error instanceof TRPCError){
+                throw error;
+            }
+
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Something went wrong",
+            });
+        }
+    }
+    ),
 
     agentInfo: publicProcedure.input(z.object({
         roomId: z.string(),

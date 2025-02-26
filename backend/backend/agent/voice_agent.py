@@ -3,8 +3,11 @@ from dataclasses import dataclass
 from typing import Optional
 
 from ai01.agent import Agent, AgentOptions
-from ai01.providers.gemini.gemini_realtime import GeminiOptions, GeminiRealtime
 from ai01.providers.openai import AudioTrack
+from ai01.providers.openai.realtime import (
+    RealTimeModel,
+    RealTimeModelOptions,
+)
 from ai01.rtc import (
     HuddleClientOptions,
     ProduceOptions,
@@ -15,6 +18,8 @@ from ai01.rtc import (
 )
 
 from backend.utils import env, logger
+
+from .persona_prompts import PersonaType, get_persona_prompts
 
 
 @dataclass
@@ -41,10 +46,25 @@ class VoiceAgentOptions:
     )
     """
 
+    persona: PersonaType = "Comedian"
+    """
+    Persona type of the Agent (Professor, Doctor, etc.)
+    """
+
+    initial_query: Optional[str] = None
+    """
+    Initial query from the user (if available)
+    """
+
 
 class VoiceAgent:
     def __init__(self, options: VoiceAgentOptions):
         self._options: VoiceAgentOptions = options
+
+        if self._options.metadata is None:
+            self._options.metadata = {}
+
+        self._options.metadata["persona"] = self._options.persona
 
         self._agent, self._llm = self._setup_agent()
 
@@ -107,26 +127,20 @@ class VoiceAgent:
             AgentOptions(rtc_options=rtc_options, audio_track=AudioTrack()),
         )
 
-        # Create a Gemini Realtime instance with the agent and Gemini options
-        llm = GeminiRealtime(
+        system_instruction = get_persona_prompts(self._options.persona)
+
+        if self._options.initial_query:
+            system_instruction += (
+                f"\n\nThe user's initial query is: {self._options.initial_query}\n"
+            )
+            system_instruction += "Remember to first introduce yourself as the specified persona, then address this query."
+
+        llm = RealTimeModel(
             agent=agent,
-            options=GeminiOptions(
-                gemini_api_key=env.gemini_api_key,
-                system_instruction="""### Role
-                    You are an AI Customer Support Agent named Sophie, who is responsible for handling customer queries and providing support,
-                    Greet the user as they join and ask them how you can help them today, based on the conversation, provide accurate 
-                    help and reports, dont start talking bullshit with them which is outside the context of the conversation.
-                    ### Context
-                    - User: Hi, I have a problem with my order
-                    - Sophie: Hi, I'm Sophie, how can I help you today?
-                    - User: I ordered a product and it's not working
-                    - Sophie: I'm sorry to hear that, can you provide me with the order number?
-                    - User: Sure, it's
-                    - Sophie: Thank you, let me check that for you
-                    - User: ...
-                    - Sophie: I see the issue, I'll escalate this to the technical team and they will get back to you soon
-                    - User: Thank you
-                    """,
+            options=RealTimeModelOptions(
+                oai_api_key=env.openai_api_key,
+                instructions=system_instruction,
+                function_declaration=[],
             ),
         )
 

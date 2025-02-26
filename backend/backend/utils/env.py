@@ -35,6 +35,11 @@ ENV_SPEC = {
         "required": True,
         "type": str,
     },
+    "openai_api_key": {
+        "env_name": "OPENAI_API_KEY",
+        "required": True,
+        "type": str,
+    },
     "gemini_api_key": {
         "env_name": "GEMINI_API_KEY",
         "required": True,
@@ -80,6 +85,10 @@ class EnvironmentVariables:
     @property
     def gemini_api_key(self) -> str:
         return self._env_vars["gemini_api_key"]
+
+    @property
+    def openai_api_key(self) -> str:
+        return self._env_vars["openai_api_key"]
 
     @property
     def room_id(self) -> str:

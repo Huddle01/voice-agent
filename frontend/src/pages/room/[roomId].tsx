@@ -12,7 +12,7 @@ const RoomPage = () => {
       <div className="flex items-center justify-center mt-5 z-10 px-5">
         <div className='flex-1 grid place-content-center' >
           <div className="bg-[#1a1a1a] w-fit px-5 flex-1 py-2.5 rounded-full flex items-center shadow-md">
-            <h1 className="text-sm font-medium text-gray-200">Discussing Project Requirements</h1>
+            <h1 className="text-sm font-medium text-gray-200">Helping Translating.</h1>
           </div>
         </div>
         

@@ -1,16 +1,19 @@
 import { cn } from '@/lib/utils';
+import { agentPeerIdAtom } from '@/store/room.store';
+import { useActivePeers } from '@huddle01/react';
+import { useAtomValue } from 'jotai';
 import type React from 'react'
-import { useEffect, useState } from 'react';
+import RandomDots from './RandomDots';
 
 const AgentCard: React.FC = () => {
-    const [aiSpeaking, setAiSpeaking] = useState(false);
+    const agentPeerId = useAtomValue(agentPeerIdAtom);
+    const {dominantSpeakerId} = useActivePeers();
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setAiSpeaking(prev => !prev);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, []);
+    let aiSpeaking = false;
+
+    if (dominantSpeakerId == agentPeerId) {
+        aiSpeaking = true;
+    }
 
   return (
     <div className={cn("relative flex-grow m-4 overflow-hidden bg-black rounded-xl shadow-xl")}>
@@ -63,34 +66,9 @@ const AgentCard: React.FC = () => {
             ))}
             
             {aiSpeaking && (
-                <div className="absolute inset-0">
-                {[...Array(12)].map((_, i) => {
-                    const size = 1 + Math.random() * 3;
-                    const posX = 10 + Math.random() * 80;
-                    const posY = 10 + Math.random() * 80;
-                    const delay = Math.random() * 2;
-                    const duration = 1 + Math.random() * 2;
-                    
-                    return (
-                    <div 
-                        className="absolute rounded-full bg-amber-300"
-                        style={{
-                        width: `${size}px`,
-                        height: `${size}px`,
-                        left: `${posX}%`,
-                        top: `${posY}%`,
-                        opacity: 0.6,
-                        animation: `float ${duration}s infinite ease-in-out`,
-                        animationDelay: `${delay}s`
-                        }}
-                    />
-                    );
-                })}
-                </div>
+                <RandomDots />
             )}
             </div>
-            
-            
         </div>
         </div>
     </div>
@@ -99,3 +77,5 @@ const AgentCard: React.FC = () => {
 }
 
 export default AgentCard
+
+

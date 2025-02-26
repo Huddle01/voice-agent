@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { useLocalAudio, useRoom } from "@huddle01/react";
 import { useRouter } from "next/router";
 import { useSetAtom } from "jotai";
-import { setAgentPeerIdAtom } from "@/store/room.store";
+import { setAgentPeerIdAtom, setRoomIdAtom } from "@/store/room.store";
 
 export default function Home() {
   const {mutateAsync: createToken} = api.room.token.useMutation();
@@ -34,6 +34,7 @@ export default function Home() {
   const {mutateAsync: callAgent} = api.agent.callAgent.useMutation();
 
   const setAgentPeerId = useSetAtom(setAgentPeerIdAtom);
+  const setRoomId = useSetAtom(setRoomIdAtom);
 
   const {joinRoom} = useRoom();
   const {enableAudio}= useLocalAudio();
@@ -100,12 +101,14 @@ export default function Home() {
         roomId: room.roomId
       })
 
-
       const {agent_peer_id} = await callAgent({
-        roomId: room.roomId
+        roomId: room.roomId,
+        persona: selectedPersona,
+        initialQuery: inputValue
       })
 
       setAgentPeerId(agent_peer_id);
+      setRoomId(room.roomId);
 
       router.push(`/room/lobby?roomId=${room.roomId}`);
     }catch(error){

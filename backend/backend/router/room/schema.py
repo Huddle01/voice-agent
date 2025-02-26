@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from backend.agent.persona_prompts import PersonaType
+
 
 # Request and response bodies for creating a room
 class JoinRoomRequest(BaseModel):
@@ -10,6 +12,19 @@ class JoinRoomRequest(BaseModel):
     """
 
     room_id: str
+    """
+    Room ID to join
+    """
+
+    persona: PersonaType = "Comedian"
+    """
+    Persona type of the Agent (Professor, Doctor, etc.)
+    """
+
+    initial_query: Optional[str] = None
+    """
+    Initial query from the user (if available)
+    """
 
 
 class JoinRoomResponse(BaseModel):
@@ -23,6 +38,14 @@ class JoinRoomResponse(BaseModel):
 
 
 # ---------- END ----------
+
+
+class VoiceAgentFlushRequest(BaseModel):
+    """
+    Request body for getting agent info
+    """
+
+    room_id: str
 
 
 class VoiceAgentInfoRequest(BaseModel):
