@@ -1,12 +1,13 @@
-import asyncio
+import asyncio  # noqa: I001
 from dataclasses import dataclass
 from typing import Optional
 
 from ai01.agent import Agent, AgentOptions
 from ai01.providers.openai import AudioTrack
-from ai01.providers.openai.realtime import (
-    RealTimeModel,
-    RealTimeModelOptions,
+from ai01.providers.gemini.realtime import (
+    GeminiRealtime,
+    GeminiOptions,
+    GeminiConfig,
 )
 from ai01.rtc import (
     HuddleClientOptions,
@@ -135,13 +136,13 @@ class VoiceAgent:
             )
             system_instruction += "Remember to first introduce yourself as the specified persona, then address this query."
 
-        llm = RealTimeModel(
+        llm = GeminiRealtime(
             agent=agent,
-            options=RealTimeModelOptions(
-                oai_api_key=env.openai_api_key,
-                instructions=system_instruction,
-                function_declaration=[],
-            ),
+            options=GeminiOptions(
+                gemini_api_key=env.gemini_api_key,
+                system_instruction=system_instruction,
+                config=GeminiConfig()
+            )
         )
 
         return agent, llm
@@ -170,10 +171,9 @@ class VoiceAgent:
                 )
 
         @room.on(RoomEvents.NewConsumerAdded)
-        def on_remote_consumer_added(data: RoomEventsData.NewConsumerAdded):
-            logger.info(f"Remote Consumer Added: {data}")
-
-            if data["kind"] == "audio":
+        def on_remote_consumer_added(data: RoomEventsData.NewConsumerAdded) -> None:
+            if data["label"] == "audio":
+                logger.info(f"Audio Consumer Addedq: {data['consumer_id']}")
                 track = data["consumer"].track
 
                 if track is None:
@@ -189,7 +189,6 @@ class VoiceAgent:
 
         await self.agent.connect()
 
-        # Produce the audio track if available for the agent.
         if self.agent.audio_track is not None:
             await self.agent.rtc.produce(
                 options=ProduceOptions(

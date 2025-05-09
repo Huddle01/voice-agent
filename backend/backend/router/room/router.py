@@ -1,3 +1,7 @@
+
+import logging
+
+from ai01.rtc import HuddleClientOptions
 from fastapi import APIRouter, HTTPException, status
 
 from backend.agent import Role, VoiceAgent, VoiceAgentOptions
@@ -9,6 +13,8 @@ from .schema import (
     VoiceAgentFlushRequest,
     VoiceAgentInfoResponse,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/flow",
@@ -25,6 +31,7 @@ async def agent_join_room(item: JoinRoomRequest):
     Flow for an Agent to Join a Room.
     """
     try:
+        logger.info(f"Joining Room {item.room_id} with Agent")
         room_id = item.room_id
 
         agent_exists = await store.get_agent(room_id)
@@ -36,19 +43,29 @@ async def agent_join_room(item: JoinRoomRequest):
         if agent_exists is not None and agent_exists.peer_id is not None:
             return JoinRoomResponse(room_id=room_id, agent_peer_id=agent_exists.peer_id)
 
+        huddle_client_options = HuddleClientOptions()
+
+        huddle_client_options.use_turn = False
+
+        logger.info(f"Huddle Client Options: {huddle_client_options}")
+
         voice_agent_options = VoiceAgentOptions(
             room_id=room_id,
             role=Role.HOST,
             metadata={"displayName": "Agent"},
             persona=item.persona,
             initial_query=item.initial_query,
+            huddle_client_options=huddle_client_options
         )
 
         agent = VoiceAgent(voice_agent_options)
 
+        logger.info(f"Agent created for Room {room_id}")
         await store.set_agent(room_id, agent)
 
         peer_id = await agent.join_room()
+
+        logger.info(f"Agent joined Room {room_id} with Peer ID {peer_id}")
 
         return JoinRoomResponse(room_id=room_id, agent_peer_id=peer_id)
 
